@@ -3,8 +3,11 @@
 #include "Directory.h"
 #include "File.h"
 #include "FileFactory.h"
+#include "FileSystemException.h"
 #include <iostream>
 #include <sstream>
+
+
 
 VirtualShell::VirtualShell() : running(false) {}
 
@@ -28,9 +31,18 @@ void VirtualShell::start() {
 
         auto tokens = tokenize(input);
         std::string command = tokens[0];
-
         std::vector<std::string> args(tokens.begin() + 1, tokens.end());
-        executeCommand( command, args );
+
+        try {
+            executeCommand(command, args);
+        }
+        catch (const FileSystemException& e) {
+            std::cout << "Error" << e.what() << std::endl;
+
+        }
+        catch (const std::exception& e) {
+            std::cout << "System Error" << e.what() << std::endl;
+        }
 
     }
 
@@ -93,8 +105,7 @@ void VirtualShell::cmdMkdir(const std::vector<std::string>& args) {
 
 void VirtualShell::cmdCd(const std::vector<std::string>& args) {
     if (args.empty()) {
-        std::cout<< "Error: cd requires a target directory." << std::endl;
-        return;
+        throw FileSystemException("cd requires a target directory name");
     }
     std::string target = args[0];
     Session& session = Session::getInstance();

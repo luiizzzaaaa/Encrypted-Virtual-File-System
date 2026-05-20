@@ -20,4 +20,6 @@ add_executable(Encrypted_Virtual_File_System
         main.cpp
         FileFactory.h
         FileFactory.cpp
+        FileSystemException.h
+        FileSystemException.cpp
 )
