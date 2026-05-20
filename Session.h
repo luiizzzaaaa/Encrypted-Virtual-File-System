@@ -28,7 +28,7 @@ public:
     void setCurrentDir(std::shared_ptr<Directory> dir);
 
     std::string getCurrentUser() const;
-    void setCurrentUser(std::string& username);
+    void setCurrentUser(const std::string& username);
 
 
 };

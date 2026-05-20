@@ -29,6 +29,6 @@ std::string Session::getCurrentUser() const {
     return currentUser;
 }
 
-void Session::setCurrentUser(const std::string username) {
+void Session::setCurrentUser(const std::string& username) {
     currentUser = username;
 }
