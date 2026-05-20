@@ -18,4 +18,6 @@ add_executable(Encrypted_Virtual_File_System
         VirtualShell.h
         VirtualShell.cpp
         main.cpp
+        FileFactory.h
+        FileFactory.cpp
 )
