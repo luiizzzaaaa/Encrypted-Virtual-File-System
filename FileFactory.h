@@ -9,7 +9,8 @@
 
 enum class EntityType {
     FILE,
-    DIRECTORY
+    DIRECTORY,
+    SYMLINK
 };
 
 class FileFactory {
