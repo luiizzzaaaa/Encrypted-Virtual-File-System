@@ -2,6 +2,7 @@
 #include "Session.h"
 #include "Directory.h"
 #include "File.h"
+#include "FileFactory.h"
 #include <iostream>
 #include <sstream>
 
@@ -82,10 +83,12 @@ void VirtualShell::cmdMkdir(const std::vector<std::string>& args) {
     }
 
     std::string dirName = args[0];
-    auto newDir = std::make_shared<Directory>(dirName);
+    auto newDir = FileFactory::createEntity(EntityType::DIRECTORY, dirName);
 
-    Session::getInstance().getCurrentDir()->addEntity(newDir);
-    std::cout << " Creating directory " << dirName << std::endl;
+    if (newDir) {
+        Session::getInstance().getCurrentDir()->addEntity(newDir);
+        std::cout << " Creating directory " << dirName << std::endl;
+    }
 }
 
 void VirtualShell::cmdCd(const std::vector<std::string>& args) {
