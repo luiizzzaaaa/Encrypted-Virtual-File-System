@@ -1,11 +1,33 @@
 #include "File.h"
+#include "EncryptionStrategy.h"
+#include "CryptoEngine.h"
+#include "Session.h"
 #include <iostream>
 
-File::File( const std::string& name, size_t size)
-    :FileSystemEntity(name), size(size) {}
+File::File( const std::string& name, size_t initialSize)
+    :FileSystemEntity(name) {
+
+    if (initialSize > 0 ) {
+        encryptedContent = std::string(initialSize, ' ');
+    }
+}
+
+void File::writeContent(const std::string& rawText) {
+    CryptoEngine<XorEncryption> engine;
+    std::string userKey = Session::getInstance().getCurrentUser()->getUserKey();
+
+    this->encryptedContent = engine.encryptData(rawText, userKey);
+}
+
+std::string File::readContent() const {
+    CryptoEngine<XorEncryption> engine;
+    std::string userKey = Session::getInstance().getCurrentUser()->getUserKey();
+
+    return engine.decryptData(this->encryptedContent, userKey);
+}
 
 size_t File::getSize() const {
-    return size;
+    return encryptedContent.size();
 }
 
 void File::printDetails(int indent) const {

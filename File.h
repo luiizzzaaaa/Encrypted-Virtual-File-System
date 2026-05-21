@@ -12,11 +12,13 @@
 class File : public FileSystemEntity {
 
 private:
-    size_t size;
-    std::vector<char> encryptedData;
+    std::string encryptedContent;
 
 public:
-    File(const std::string& name, size_t size);
+    File(const std::string& name, size_t initialSize = 0);
+
+    void writeContent(const std::string& rawText);
+    std::string readContent() const;
 
     size_t getSize() const override;
     void printDetails(int indent = 0) const override;
