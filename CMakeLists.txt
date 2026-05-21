@@ -24,4 +24,6 @@ add_executable(Encrypted_Virtual_File_System
         FileSystemException.cpp
         SymLink.h
         SymLink.cpp
+        User.h
+        User.cpp
 )
