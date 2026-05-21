@@ -26,4 +26,6 @@ add_executable(Encrypted_Virtual_File_System
         SymLink.cpp
         User.h
         User.cpp
+        EncryptionStrategy.h
+        CryptoEngine.h
 )

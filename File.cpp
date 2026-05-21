@@ -34,5 +34,5 @@ void File::printDetails(int indent) const {
     for ( int i = 0; i < indent; ++i ) {
         std::cout << " ";
     }
-    std::cout<< " FILE " << name << " (" << size << " bytes)"<< std::endl;
+    std::cout<< " FILE " << name << " (" << getSize() << " bytes)"<< std::endl;
 }
