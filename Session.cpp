@@ -1,8 +1,10 @@
 #include "Session.h"
 
-Session::Session() : currentUser("guest") {
+Session::Session()  {
     rootDir = std::make_shared<Directory>("root");
     currentDir = rootDir;
+
+    currentUser = std::make_shared<User>("guest", "default_pass");
 }
 
 
@@ -25,10 +27,13 @@ void Session::setCurrentDir(std::shared_ptr<Directory> dir) {
     }
 }
 
-std::string Session::getCurrentUser() const {
+std::shared_ptr<User> Session::getCurrentUser() const {
     return currentUser;
 }
 
-void Session::setCurrentUser(const std::string& username) {
-    currentUser = username;
+void Session::setCurrentUser( std::shared_ptr<User> user) {
+
+    if (user) {
+        currentUser = user;
+    }
 }

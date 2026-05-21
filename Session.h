@@ -4,6 +4,7 @@
 #define ENCRYPTED_VIRTUAL_FILE_SYSTEM_SESSION_H
 
 #include "Directory.h"
+#include "User.h"
 #include <memory>
 #include <string>
 
@@ -13,7 +14,7 @@ private:
     std::shared_ptr<Directory> rootDir;
     std::shared_ptr<Directory> currentDir;
 
-    std::string currentUser;
+    std::shared_ptr<User> currentUser;
 
     Session();
 
@@ -27,8 +28,8 @@ public:
     std::shared_ptr<Directory> getCurrentDir() const;
     void setCurrentDir(std::shared_ptr<Directory> dir);
 
-    std::string getCurrentUser() const;
-    void setCurrentUser(const std::string& username);
+    std::shared_ptr<User> getCurrentUser() const;
+    void setCurrentUser(std::shared_ptr<User> user);
 
 
 };

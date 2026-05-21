@@ -20,7 +20,7 @@ void VirtualShell::start() {
 
     while (running) {
         Session& session = Session::getInstance();
-        std::cout << session.getCurrentUser() << "@vfs:/"
+        std::cout << session.getCurrentUser()->getUsername() << "@vfs:/"
                   << session.getCurrentDir()->getName() << "$ ";
 
         if (!std::getline(std::cin, input)) {
