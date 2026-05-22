@@ -30,4 +30,6 @@ add_executable(Encrypted_Virtual_File_System
         CryptoEngine.h
         Logger.h
         Logger.cpp
+        PermissionManager.h
+        PermissionManager.cpp
 )
