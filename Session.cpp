@@ -1,4 +1,5 @@
 #include "Session.h"
+#include "Logger.h"
 
 Session::Session()  {
     rootDir = std::make_shared<Directory>("root");
@@ -35,5 +36,6 @@ void Session::setCurrentUser( std::shared_ptr<User> user) {
 
     if (user) {
         currentUser = user;
+        Logger::getInstance(). logInfo("User " + user->getUsername() + " logged in" );
     }
 }

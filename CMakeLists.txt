@@ -28,4 +28,6 @@ add_executable(Encrypted_Virtual_File_System
         User.cpp
         EncryptionStrategy.h
         CryptoEngine.h
+        Logger.h
+        Logger.cpp
 )

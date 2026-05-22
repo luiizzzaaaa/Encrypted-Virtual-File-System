@@ -4,6 +4,7 @@
 #include "File.h"
 #include "FileFactory.h"
 #include "FileSystemException.h"
+#include "Logger.h"
 #include <iostream>
 #include <sstream>
 
@@ -33,15 +34,19 @@ void VirtualShell::start() {
         std::string command = tokens[0];
         std::vector<std::string> args(tokens.begin() + 1, tokens.end());
 
+        Logger::getInstance().logInfo("command: " + command);
+
         try {
             executeCommand(command, args);
         }
         catch (const FileSystemException& e) {
             std::cout << "Error" << e.what() << std::endl;
+            Logger::getInstance().logError("Error VFS: " + std::string(e.what()));
 
         }
         catch (const std::exception& e) {
             std::cout << "System Error" << e.what() << std::endl;
+            Logger::getInstance().logError("Critical system error: " + std::string(e.what()));
         }
 
     }
