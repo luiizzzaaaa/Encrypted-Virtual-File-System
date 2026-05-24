@@ -26,3 +26,6 @@ std::string User::getUserKey() const {
 bool User::validatePassword(const std::string& password) const {
     return simulateHash(password) == passwordHash;
 }
+
+User::User(const std::string& username, const std::string& passwordHash, const std::string& userKey)
+    : username(username), passwordHash(passwordHash), userKey(userKey) {}

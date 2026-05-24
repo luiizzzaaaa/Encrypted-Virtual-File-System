@@ -6,7 +6,9 @@
 
 #include <string>
 #include <memory>
+#include <map>
 #include "Directory.h"
+#include "User.h"
 
 class StorageManager {
 
@@ -21,6 +23,9 @@ public:
     bool saveFileSystem(std::shared_ptr<Directory> rootDir);
 
     std::shared_ptr<Directory> loadFileSystem();
+
+    bool saveUsers(const std::map<std::string, std::shared_ptr<User>>& users);
+    void loadUsers();
 };
 
 

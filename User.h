@@ -24,6 +24,10 @@ public:
 
     bool validatePassword( const std::string& password) const;
 
+    User(const std::string& username, const std::string& passwordHash, const std::string& userKey);
+
+    std::string getPasswordHash() const { return passwordHash; }
+
 };
 
 

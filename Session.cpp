@@ -5,7 +5,13 @@ Session::Session()  {
     rootDir = std::make_shared<Directory>("root");
     currentDir = rootDir;
 
-    currentUser = std::make_shared<User>("guest", "default_pass");
+    auto adminUser = std::make_shared<User>("admin", "admin123");
+    auto guestUser = std::make_shared<User>("guest", "default_pass");
+
+    addUser(adminUser);
+    addUser(guestUser);
+
+    currentUser = guestUser;
 }
 
 
@@ -18,9 +24,7 @@ std::shared_ptr<Directory> Session::getCurrentDir() const {
     return currentDir;
 }
 
-std::shared_ptr<Directory> Session::getRootDir() const {
-    return rootDir;
-}
+
 
 void Session::setCurrentDir(std::shared_ptr<Directory> dir) {
     if (dir) {

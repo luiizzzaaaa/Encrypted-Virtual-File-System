@@ -2,6 +2,8 @@
 #include "File.h"
 #include "Directory.h"
 #include "Logger.h"
+#include "User.h"
+#include "Session.h"
 #include <fstream>
 #include <iostream>
 #include <vector>
@@ -84,6 +86,43 @@ std::shared_ptr<Directory> StorageManager::loadFileSystem() {
     }
 
     inFile.close();
-    Logger::getInstance().logInfo("StorageManager: Sistemul de fisiere a fost reconstruit de pe disc.");
+    Logger::getInstance().logInfo("The info was uploaded ");
     return rootDir;
+}
+
+bool StorageManager::saveUsers(const std::map<std::string, std::shared_ptr<User>>& users) {
+    std::ofstream outFile("vfs_users.dat");
+    if (!outFile.is_open()) return false;
+
+    for (const auto& pair : users) {
+        auto u = pair.second;
+        outFile << u->getUsername() << "|" << u->getPasswordHash() << "|" << u->getUserKey() << "\n";
+    }
+    outFile.close();
+    Logger::getInstance().logInfo("Users were saved.");
+    return true;
+}
+
+void StorageManager::loadUsers() {
+    std::ifstream inFile("vfs_users.dat");
+    if (!inFile.is_open()) return;
+
+    std::string line;
+    while (std::getline(inFile, line)) {
+        if (line.empty()) continue;
+
+        size_t pos1 = line.find('|');
+        size_t pos2 = line.find('|', pos1 + 1);
+
+        if (pos1 != std::string::npos && pos2 != std::string::npos) {
+            std::string uname = line.substr(0, pos1);
+            std::string hash = line.substr(pos1 + 1, pos2 - pos1 - 1);
+            std::string key = line.substr(pos2 + 1);
+            auto loadedUser = std::make_shared<User>(uname, hash, key);
+
+            Session::getInstance().addUser(loadedUser);
+        }
+    }
+    inFile.close();
+    Logger::getInstance().logInfo("The users were downloaded. ");
 }

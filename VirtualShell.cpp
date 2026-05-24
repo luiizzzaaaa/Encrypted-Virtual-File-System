@@ -21,8 +21,15 @@ void VirtualShell::start() {
 
     while (running) {
         Session& session = Session::getInstance();
-        std::cout << session.getCurrentUser()->getUsername() << "@vfs:/"
-                  << session.getCurrentDir()->getName() << "$ ";
+        std::string fullPath = "";
+        std::shared_ptr<FileSystemEntity> temp = session.getCurrentDir();
+
+        while (temp != nullptr) {
+            fullPath = "/" + temp->getName() + fullPath;
+            temp = temp->getParent();
+        }
+
+        std::cout << session.getCurrentUser()->getUsername() << "@vfs:" << fullPath << "$ ";
 
         if (!std::getline(std::cin, input)) {
             break;
@@ -70,27 +77,50 @@ void VirtualShell::executeCommand( const std::string& command, const std::vector
         cmdLs();
     } else if (command == "mkdir") {
         cmdMkdir(args);
-    } else if ( command == "cd" ) {
+    } else if (command == "touch"){
+        cmdTouch(args);
+    }else if ( command == "cd" ) {
         cmdCd(args);
-    } else if ( command == "exit") {
-        running = false;
-        std::cout << " Exiting ";
-    } else {
-        std::cout << " Command not found: " << command<< ". Type 'help' for options." << std::endl;
+    }else if (command == "login") {
+        cmdLogin(args);
+    } else if (command == "useradd") {
+        cmdUserAdd(args);
+    }else if ( command == "exit") {
+            running = false;
+            std::cout << " Exiting ";
+        } else {
+            std::cout << " Command not found: " << command<< ". Type 'help' for options." << std::endl;
+        }
+
     }
 
-}
 
 void VirtualShell::cmdHelp() {
     std::cout << "Available commands:" << std::endl
                 <<" ls                 - List details of the current directory." << std::endl
                 <<" mkdir <name>       - Create a directory." << std::endl
                 <<" cd <name>          - Change the current directory.(use '..' for parent)" << std::endl
-                <<" exit               - Close the app" << std::endl;
+                <<" exit               - Close the app" << std::endl
+                <<" useradd <user> <p> - Create a new user with a password." << std::endl
+                <<" login <user>       - Log in as a different user." << std::endl;
 }
 
 void VirtualShell::cmdLs() {
-    Session::getInstance().getCurrentDir()->printDetails();
+    auto currentDir = Session::getInstance().getCurrentDir();
+    const auto& children = currentDir->getEntities();
+
+    if (children.empty()) {
+        std::cout << "  (Folder gol)\n";
+    } else {
+        std::cout << "Continutul directorului '" << currentDir->getName() << "':\n";
+        for (const auto& entity : children) {
+            if (std::dynamic_pointer_cast<Directory>(entity)) {
+                std::cout << "  [DIR]  " << entity->getName() << "\n";
+            } else {
+                std::cout << "  [FILE] " << entity->getName() << "\n";
+            }
+        }
+    }
 }
 
 void VirtualShell::cmdMkdir(const std::vector<std::string>& args) {
@@ -105,6 +135,34 @@ void VirtualShell::cmdMkdir(const std::vector<std::string>& args) {
     if (newDir) {
         Session::getInstance().getCurrentDir()->addEntity(newDir);
         std::cout << " Creating directory " << dirName << std::endl;
+    }
+}
+
+void VirtualShell::cmdTouch(const std::vector<std::string>& args) {
+    if (args.empty()) {
+        std::cout << " You must specify a file name." << std::endl;
+        return;
+    }
+
+    std::string fileName = args[0];
+    auto currentDir = Session::getInstance().getCurrentDir();
+    bool exists = false;
+
+    for (const auto& entity : currentDir->getEntities()) {
+        if (entity->getName() == fileName) {
+            exists = true;
+            break;
+        }
+    }
+
+    if (exists) {
+        std::cout << " Error: An entity named '" << fileName << "' already exists." << std::endl;
+    } else {
+        auto newFile = FileFactory::createEntity(EntityType::FILE, fileName);
+        if (newFile) {
+            currentDir->addEntity(newFile);
+            std::cout << " Creating file " << fileName << std::endl;
+        }
     }
 }
 
@@ -126,10 +184,71 @@ void VirtualShell::cmdCd(const std::vector<std::string>& args) {
             std::cout << " Alredy at root directory." << std::endl;
         }
     } else {
-        std::cout << " inca n am fct child navigation" << std::endl;
+        auto currentDir = session.getCurrentDir();
+        bool found = false;
+
+        for (const auto& entity : currentDir->getEntities()) {
+            if (entity->getName() == target) {
+                found = true;
+
+                if (auto subDir = std::dynamic_pointer_cast<Directory>(entity)) {
+                    session.setCurrentDir(subDir);
+                } else {
+
+                    throw FileSystemException("'" + target + "' is a file, not a directory.");
+                }
+                break;
+            }
+        }
+
+        if (!found) {
+            throw FileSystemException("Directory" + target + "' is not found.");
+        }
     }
 }
 
+void VirtualShell::cmdUserAdd(const std::vector<std::string>& args) {
+    if (args.size() < 2) {
+        std::cout << " Usage: useradd <username> <password>\n";
+        return;
+    }
 
+    std::string newUsername = args[0];
+    std::string newPassword = args[1];
 
+    if (Session::getInstance().getUser(newUsername) != nullptr) {
+        std::cout << " Error: User '" << newUsername << "' already exists!\n";
+        return;
+    }
 
+    auto newUser = std::make_shared<User>(newUsername, newPassword);
+    Session::getInstance().addUser(newUser);
+
+    std::cout << " User '" << newUsername << "' created successfully!\n";
+    std::cout << " [SECRET] Generated UserKey: " << newUser->getUserKey() << "\n";
+}
+
+void VirtualShell::cmdLogin(const std::vector<std::string>& args) {
+    if (args.empty()) {
+        std::cout << " Usage: login <username>\n";
+        return;
+    }
+
+    std::string targetUsername = args[0];
+    std::cout << " Password for " << targetUsername << ": ";
+    std::string enteredPassword;
+    std::getline(std::cin, enteredPassword);
+
+    auto targetUser = Session::getInstance().getUser(targetUsername);
+
+    if (targetUser != nullptr) {
+        if (targetUser->validatePassword(enteredPassword)) {
+            Session::getInstance().setCurrentUser(targetUser);
+            std::cout << " Successfully logged in as " << targetUsername << ".\n";
+        } else {
+            std::cout << " Access Denied: Incorrect password.\n";
+        }
+    } else {
+        std::cout << " Error: User '" << targetUsername << "' not found!\n";
+    }
+}

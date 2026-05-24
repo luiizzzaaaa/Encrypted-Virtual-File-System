@@ -19,6 +19,9 @@ private:
     void cmdLs();
     void cmdMkdir(const std::vector<std::string>& args);
     void cmdCd(const std::vector<std::string>& args);
+    void cmdTouch(const std::vector<std::string>& args);
+    void cmdLogin(const std::vector<std::string>& args);
+    void cmdUserAdd(const std::vector<std::string>& args);
     void cmdHelp();
 
 public:
