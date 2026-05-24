@@ -32,4 +32,6 @@ add_executable(Encrypted_Virtual_File_System
         Logger.cpp
         PermissionManager.h
         PermissionManager.cpp
+        StorageManager.h
+        StorageManager.cpp
 )

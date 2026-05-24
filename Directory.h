@@ -19,6 +19,8 @@ public:
     size_t getSize() const override;
     void printDetails(int indent = 0) const override;
 
+    const std::vector<std::shared_ptr<FileSystemEntity>>& getEntities() const { return children; }
+
 
 
 };
