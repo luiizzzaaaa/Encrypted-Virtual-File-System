@@ -5,24 +5,21 @@
 #include "Logger.h"
 
 int main() {
-    std::cout<<"Encrypted Virtual File System 1.0:";
+
+    std::cout<<"Encrypted virtual file system 1.0:";
+
 
     StorageManager storageManager("vfs_storage.dat");
-    std::cout << "[SISTEM] Se incarca structura de directoare...\n";
+    std::cout << "[SISTEM] directory uploading \n";
+
     std::shared_ptr<Directory> loadedRoot = storageManager.loadFileSystem();
     Session::getInstance().setRootDir(loadedRoot);
-    
     storageManager.loadUsers();
 
-    std::cout << "[SISTEM] Se incarca structura de directoare: \n";
-
     Session& session = Session::getInstance();
-    session.setRootDir(loadedRoot);
+    Logger::getInstance().logInfo("vfs started:");
 
-    Logger::getInstance().logInfo("Aplicatia VFS a pornit cu succes.");
-
-
-    std::cout << "[SISTEM] Terminal pregatit. Pentru a inchide aplicatia, apasati Enter pe o linie goala sau tastati 'exit'.\n\n";
+    std::cout << "[SISTEM] Terminal pregatit. Pentru a inchide aplicatia tastati 'exit'.\n\n";
 
     try {
         VirtualShell shell;

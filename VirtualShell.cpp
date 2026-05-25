@@ -5,6 +5,7 @@
 #include "FileFactory.h"
 #include "FileSystemException.h"
 #include "Logger.h"
+#include "FileSystemEntity.h"
 #include <iostream>
 #include <sstream>
 
@@ -39,6 +40,7 @@ void VirtualShell::start() {
 
         auto tokens = tokenize(input);
         std::string command = tokens[0];
+        commandHistory.add(input);
         std::vector<std::string> args(tokens.begin() + 1, tokens.end());
 
         Logger::getInstance().logInfo("command: " + command);
@@ -88,7 +90,10 @@ void VirtualShell::executeCommand( const std::string& command, const std::vector
     }else if ( command == "exit") {
             running = false;
             std::cout << " Exiting ";
-        } else {
+
+    } else if (command == "history") {
+        cmdHistory();
+    } else {
             std::cout << " Command not found: " << command<< ". Type 'help' for options." << std::endl;
         }
 
@@ -102,26 +107,26 @@ void VirtualShell::cmdHelp() {
                 <<" cd <name>          - Change the current directory.(use '..' for parent)" << std::endl
                 <<" exit               - Close the app" << std::endl
                 <<" useradd <user> <p> - Create a new user with a password." << std::endl
-                <<" login <user>       - Log in as a different user." << std::endl;
+                <<" login <user>       - Log in as a different user." << std::endl
+                <<" history            - Show history"<< std::endl;
 }
 
 void VirtualShell::cmdLs() {
     auto currentDir = Session::getInstance().getCurrentDir();
+
     const auto& children = currentDir->getEntities();
 
     if (children.empty()) {
         std::cout << "  (Folder gol)\n";
     } else {
         std::cout << "Continutul directorului '" << currentDir->getName() << "':\n";
+
         for (const auto& entity : children) {
-            if (std::dynamic_pointer_cast<Directory>(entity)) {
-                std::cout << "  [DIR]  " << entity->getName() << "\n";
-            } else {
-                std::cout << "  [FILE] " << entity->getName() << "\n";
-            }
+            entity->printDetails();
         }
     }
 }
+
 
 void VirtualShell::cmdMkdir(const std::vector<std::string>& args) {
     if (args.empty()) {
@@ -193,6 +198,7 @@ void VirtualShell::cmdCd(const std::vector<std::string>& args) {
 
                 if (auto subDir = std::dynamic_pointer_cast<Directory>(entity)) {
                     session.setCurrentDir(subDir);
+                    dirHistory.add(subDir);
                 } else {
 
                     throw FileSystemException("'" + target + "' is a file, not a directory.");
@@ -251,4 +257,12 @@ void VirtualShell::cmdLogin(const std::vector<std::string>& args) {
     } else {
         std::cout << " Error: User '" << targetUsername << "' not found!\n";
     }
+}
+
+void VirtualShell::cmdHistory() {
+    std::cout << " Istoric Comenzi:\n";
+    commandHistory.display();
+
+    std::cout << "\nUltimele Directoare Vizitate:\n";
+    dirHistory.display();
 }

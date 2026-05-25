@@ -7,11 +7,15 @@
 
 #include <string>
 #include <vector>
+#include "History Manager.h"
 
 class VirtualShell {
 
 private:
     bool running;
+
+    HistoryManager<std::string> commandHistory{10};
+    HistoryManager<std::shared_ptr<Directory>> dirHistory{5};
 
     std::vector<std::string> tokenize(const std::string& input);
     void executeCommand(const std::string& command, const std::vector<std::string>& args);
@@ -23,11 +27,11 @@ private:
     void cmdLogin(const std::vector<std::string>& args);
     void cmdUserAdd(const std::vector<std::string>& args);
     void cmdHelp();
+    void cmdHistory();
 
 public:
     VirtualShell();
     void start();
-
 
 };
 

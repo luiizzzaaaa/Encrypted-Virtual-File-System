@@ -17,12 +17,13 @@ public:
 
     virtual ~FileSystemEntity() = default;
 
+    virtual void printDetails(int indent = 0) const = 0;
+
     std::string getName() const;
     void setParent( std::shared_ptr<FileSystemEntity> p);
     std::shared_ptr<FileSystemEntity> getParent() const;
 
     virtual size_t getSize() const = 0;
-    virtual void printDetails( int indent = 0) const = 0;
 
 };
 

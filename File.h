@@ -8,6 +8,7 @@
 #include "FileSystemEntity.h"
 #include <vector>
 #include <string>
+#include <iostream>
 
 class File : public FileSystemEntity {
 
@@ -24,7 +25,6 @@ public:
     void printDetails(int indent = 0) const override;
 
 };
-
 
 
 

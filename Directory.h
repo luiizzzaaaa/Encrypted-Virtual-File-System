@@ -5,6 +5,7 @@
 
 #include "FileSystemEntity.h"
 #include <vector>
+#include <iostream>
 
 class Directory : public FileSystemEntity {
 
@@ -17,13 +18,12 @@ public:
     void addEntity(std::shared_ptr<FileSystemEntity> entity);
 
     size_t getSize() const override;
+
+
     void printDetails(int indent = 0) const override;
 
     const std::vector<std::shared_ptr<FileSystemEntity>>& getEntities() const { return children; }
 
-
-
 };
-
 
 #endif //ENCRYPTED_VIRTUAL_FILE_SYSTEM_DIRECTORY_H

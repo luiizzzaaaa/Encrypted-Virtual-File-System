@@ -34,4 +34,5 @@ add_executable(Encrypted_Virtual_File_System
         PermissionManager.cpp
         StorageManager.h
         StorageManager.cpp
+        "History Manager.h"
 )

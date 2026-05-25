@@ -3,6 +3,7 @@
 #define ENCRYPTED_VIRTUAL_FILE_SYSTEM_SYMLINK_H
 
 #include "FileSystemEntity.h"
+#include <iostream>
 
 class SymLink : public FileSystemEntity {
 
